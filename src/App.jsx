@@ -8,6 +8,13 @@ import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Admin from './pages/Admin';
+import Login from './pages/Login';
+import Employee from './pages/Employee';
+import MyOrders from './pages/MyOrders';
+import Wishlist from './pages/Wishlist';
+import Returns from './pages/Returns';
+import MyRewards from './pages/MyRewards';
+import MyReviews from './pages/MyReviews';
 
 function App() {
   return (
@@ -23,6 +30,13 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/employee" element={<Employee />} />
+                <Route path="/my-orders" element={<MyOrders />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/returns" element={<Returns />} />
+                <Route path="/my-rewards" element={<MyRewards />} />
+                <Route path="/my-reviews" element={<MyReviews />} />
               </Routes>
             </main>
             <Footer />
