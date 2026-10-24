@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Blowmaggy — Premium Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#0a0a0f;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
+#canvas3d{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0}
+.scroll-container{position:relative;z-index:1;height:900vh}
+.slide{position:fixed;top:0;left:0;width:100%;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;pointer-events:none;opacity:0;transform:translateY(60px);transition:opacity 0.8s ease,transform 0.8s ease}
+.slide.active{opacity:1;transform:translateY(0);pointer-events:auto}
+.slide-number{position:fixed;top:2rem;right:2rem;font-size:0.75rem;letter-spacing:0.3em;text-transform:uppercase;color:rgba(212,172,27,0.6);z-index:10}
+.slide-content{max-width:800px;text-align:center}
+.slide-label{font-size:0.7rem;letter-spacing:0.4em;text-transform:uppercase;color:#d4ac1b;margin-bottom:1rem;opacity:0.8}
+.slide h1{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:900;line-height:1.1;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff 0%,#d4ac1b 50%,#ffc414 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.slide h2{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:900;line-height:1.2;margin-bottom:1.5rem;color:#fff}
+.slide p{font-size:clamp(1rem,1.5vw,1.25rem);line-height:1.8;color:rgba(255,255,255,0.7);max-width:600px;margin:0 auto}
+.highlight{color:#ffc414;font-weight:700}
+.gradient-text{background:linear-gradient(135deg,#d4ac1b,#ffc414);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:3rem;width:100%;max-width:700px}
+.stat-item{text-align:center}
+.stat-number{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:900;color:#ffc414;display:block}
+.stat-label{font-size:0.8rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:0.5rem}
+.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:3rem;width:100%;max-width:600px}
+.feature-card{background:rgba(212,172,27,0.05);border:1px solid rgba(212,172,27,0.15);border-radius:16px;padding:1.5rem;text-align:center;backdrop-filter:blur(10px)}
+.feature-icon{font-size:2rem;margin-bottom:0.75rem}
+.feature-title{font-weight:700;font-size:0.95rem;margin-bottom:0.5rem}
+.feature-desc{font-size:0.8rem;color:rgba(255,255,255,0.5);line-height:1.5}
+.cta-btn{display:inline-flex;align-items:center;gap:0.5rem;margin-top:2rem;padding:1rem 2.5rem;background:linear-gradient(135deg,#d4ac1b,#ffc414);color:#0a0a0f;font-weight:800;font-size:1.1rem;border-radius:50px;text-decoration:none;transition:transform 0.3s,box-shadow 0.3s;pointer-events:auto;cursor:pointer;border:none}
+.cta-btn:hover{transform:scale(1.05);box-shadow:0 20px 60px rgba(212,172,27,0.3)}
+.progress-bar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,#d4ac1b,#ffc414);z-index:100;transition:width 0.1s}
+.nav-dots{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:10;display:flex;flex-direction:column;gap:12px}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);cursor:pointer;transition:background 0.3s,transform 0.3s}
+.nav-dot.active{background:#ffc414;transform:scale(1.5)}
+.nav-dot:hover{background:rgba(255,255,255,0.5)}
+.subtitle-em{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.1rem,2vw,1.5rem);color:rgba(212,172,27,0.8);margin-top:1rem}
+.tag-list{display:flex;flex-wrap:wrap;gap:0.75rem;justify-content:center;margin-top:2rem}
+.tag-item{background:rgba(212,172,27,0.1);border:1px solid rgba(212,172,27,0.2);padding:0.5rem 1.25rem;border-radius:50px;font-size:0.85rem;color:#ffc414;font-weight:600}
+.scroll-hint{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:10;font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;color:rgba(255,255,255,0.3);animation:pulse 2s infinite;transition:opacity 0.5s}
+@keyframes pulse{0%,100%{opacity:0.3;transform:translateX(-50%) translateY(0)}50%{opacity:0.7;transform:translateX(-50%) translateY(-5px)}}
+.logo-big{font-family:'Playfair Display',serif;font-size:clamp(4rem,10vw,8rem);font-weight:900;background:linear-gradient(135deg,#d4ac1b 0%,#ffc414 50%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1rem}
+.logo-sub{font-size:0.8rem;letter-spacing:0.5em;text-transform:uppercase;color:rgba(255,255,255,0.4)}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-number" id="slideNumber">01 / 09</div>
+<div class="nav-dots" id="navDots"></div>
+<div class="scroll-hint" id="scrollHint">↓ Scroll to begin ↓</div>
+<canvas id="canvas3d"></canvas>
+<div class="scroll-container">
+  <div class="slide" data-index="0"><div class="slide-content"><div class="logo-big">Blowmaggy</div><div class="logo-sub">The Future of Premium Shopping</div></div></div>
+  <div class="slide" data-index="1"><div class="slide-content"><div class="slide-label">The Vision</div><h1>One Cart.<br>Infinite Possibilities.</h1><p>The world's first <span class="highlight">6-department super-app</span> — all in one seamless experience.</p><div class="tag-list"><span class="tag-item">👕 Fashion</span><span class="tag-item">✨ Beauty</span><span class="tag-item">💻 Electronics</span><span class="tag-item">🏠 Home</span><span class="tag-item">🛍️ Grocery</span><span class="tag-item">😊 Kids</span></div></div></div>
+  <div class="slide" data-index="2"><div class="slide-content"><div class="slide-label">The Problem</div><h2>Fragmented<br>Shopping Experience</h2><p>Today's shoppers juggle <span class="highlight">6+ different apps</span> just for one purchase. It's exhausting.</p><p class="subtitle-em">"Why shop 6 times to buy 6 things?"</p></div></div>
+  <div class="slide" data-index="3"><div class="slide-content"><div class="slide-label">The Solution</div><h1>One App.<br>One Checkout.<br><span class="gradient-text">Zero Friction.</span></h1><p>Blowmaggy unites every category. One cart. One checkout. Infinite shopping.</p></div></div>
+  <div class="slide" data-index="4"><div class="slide-content"><div class="slide-label">Key Features</div><h2>Built Different</h2><div class="feature-grid"><div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Flash Sales</div><div class="feature-desc">Live countdown timers, deals that disappear in minutes</div></div><div class="feature-card"><div class="feature-icon">🎁</div><div class="feature-title">Loyalty Rewards</div><div class="feature-desc">Earn points, unlock Gold tier, birthday bonuses</div></div><div class="feature-card"><div class="feature-icon">🚚</div><div class="feature-title">Lightning Delivery</div><div class="feature-desc">Same-day in select cities, 2-day standard</div></div><div class="feature-card"><div class="feature-icon">✨</div><div class="feature-title">Curated Quality</div><div class="feature-desc">Every product verified, 30-day hassle-free returns</div></div></div></div></div>
+  <div class="slide" data-index="5"><div class="slide-content"><div class="slide-label">By the Numbers</div><h2>Impact at Scale</h2><div class="stats-grid"><div class="stat-item"><span class="stat-number">48+</span><span class="stat-label">Premium Products</span></div><div class="stat-item"><span class="stat-number">6</span><span class="stat-label">Departments</span></div><div class="stat-item"><span class="stat-number">3</span><span class="stat-label">User Roles</span></div></div></div></div>
+  <div class="slide" data-index="6"><div class="slide-content"><div class="slide-label">Revenue Model</div><h2>Sustainable<br><span class="gradient-text">Multi-Stream Revenue</span></h2><div class="feature-grid"><div class="feature-card"><div class="feature-icon">📦</div><div class="feature-title">Product Margins</div><div class="feature-desc">15-35% margin across all departments</div></div><div class="feature-card"><div class="feature-icon">📢</div><div class="feature-title">Advertising</div><div class="feature-desc">Promoted products & sponsored placements</div></div><div class="feature-card"><div class="feature-icon">👑</div><div class="feature-title">Gold Membership</div><div class="feature-desc">Premium loyalty tier with exclusive benefits</div></div><div class="feature-card"><div class="feature-icon">🏪</div><div class="feature-title">Marketplace</div><div class="feature-desc">Commission from third-party sellers</div></div></div></div></div>
+  <div class="slide" data-index="7"><div class="slide-content"><div class="slide-label">Technology</div><h2>Modern. Fast.<br><span class="gradient-text">Built to Scale.</span></h2><div class="tag-list"><span class="tag-item">⚛️ React 19</span><span class="tag-item">🔥 Vite 8</span><span class="tag-item">🎨 Tailwind CSS v4</span><span class="tag-item">🧭 React Router v7</span><span class="tag-item">🔐 RBAC Auth</span><span class="tag-item">🛒 Context API</span><span class="tag-item">📱 Responsive</span><span class="tag-item">🎯 12 Pages</span></div></div></div>
+  <div class="slide" data-index="8"><div class="slide-content"><div class="slide-label">Let's Build Together</div><h1>Ready to<br><span class="gradient-text">Transform Shopping?</span></h1><p>Blowmaggy isn't just another e-commerce app. It's the <span class="highlight">complete shopping experience</span> India has been waiting for.</p><button class="cta-btn" onclick="window.open('https://github.com/ritikbhol2907-tech/blowmaggy','_blank')">View the Project →</button></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const canvas=document.getElementById('canvas3d'),renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+renderer.setSize(window.innerWidth,window.innerHeight);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x0a0a0f,0.012);
+const camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,0.1,1000);camera.position.set(0,5,30);
+const ambientLight=new THREE.AmbientLight(0x404060,0.5);scene.add(ambientLight);
+const goldLight=new THREE.PointLight(0xd4ac1b,2,80);goldLight.position.set(10,15,10);scene.add(goldLight);
+const goldLight2=new THREE.PointLight(0xffc414,1.5,60);goldLight2.position.set(-15,10,-10);scene.add(goldLight2);
+const blueLight=new THREE.PointLight(0x4488ff,0.8,50);blueLight.position.set(20,-5,20);scene.add(blueLight);
+const goldMat=new THREE.MeshStandardMaterial({color:0xd4ac1b,metalness:0.9,roughness:0.2,emissive:0x332200,emissiveIntensity:0.3});
+const goldMatBright=new THREE.MeshStandardMaterial({color:0xffc414,metalness:0.8,roughness:0.15,emissive:0x443300,emissiveIntensity:0.4});
+const darkMat=new THREE.MeshStandardMaterial({color:0x1a1a1f,metalness:0.5,roughness:0.6});
+const neonBlueMat=new THREE.MeshStandardMaterial({color:0x4488ff,emissive:0x2244aa,emissiveIntensity:0.5,metalness:0.3,roughness:0.4});
+const neonPinkMat=new THREE.MeshStandardMaterial({color:0xff4488,emissive:0xaa2244,emissiveIntensity:0.5,metalness:0.3,roughness:0.4});
+
+// HERO GROUP
+const heroGroup=new THREE.Group();
+const torusKnot=new THREE.Mesh(new THREE.TorusKnotGeometry(4,1.2,200,32),goldMatBright);heroGroup.add(torusKnot);
+const t1=new THREE.Mesh(new THREE.TorusGeometry(7,0.15,16,100),goldMat);t1.rotation.x=Math.PI/2;heroGroup.add(t1);
+const t2=new THREE.Mesh(new THREE.TorusGeometry(9,0.1,16,100),goldMat);t2.rotation.x=Math.PI/3;t2.rotation.z=Math.PI/4;heroGroup.add(t2);
+const hPC=2000,hPos=new Float32Array(hPC*3);
+for(let i=0;i<hPC*3;i+=3){const th=Math.random()*Math.PI*2,ph=Math.random()*Math.PI,r=12+Math.random()*15;hPos[i]=r*Math.sin(ph)*Math.cos(th);hPos[i+1]=r*Math.sin(ph)*Math.sin(th);hPos[i+2]=r*Math.cos(ph);}
+const hPts=new THREE.BufferGeometry();hPts.setAttribute('position',new THREE.BufferAttribute(hPos,3));
+heroGroup.add(new THREE.Points(hPts,new THREE.PointsMaterial({color:0xd4ac1b,size:0.06,transparent:true,opacity:0.6})));
+scene.add(heroGroup);
+
+// VISION GROUP (Slide 2)
+const visionGroup=new THREE.Group();
+const depts=[0xd4ac1b,0xff4488,0x4488ff,0x44ddaa,0xdd8844,0x8844ff];
+depts.forEach((c,i)=>{const a=(i/6)*Math.PI*2,x=Math.cos(a)*12,z=Math.sin(a)*12,h=2+Math.random()*6;
+const b=new THREE.Mesh(new THREE.BoxGeometry(2,h,2),new THREE.MeshStandardMaterial({color:c,metalness:0.6,roughness:0.3,emissive:c,emissiveIntensity:0.1}));b.position.set(x,h/2-5,z);visionGroup.add(b);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(1.8,0.05,8,32),new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:0.8,transparent:true,opacity:0.5}));ring.position.set(x,-4.5,z);ring.rotation.x=Math.PI/2;visionGroup.add(ring);});
+visionGroup.add(Object.assign(new THREE.Mesh(new THREE.SphereGeometry(1.5,32,32),goldMatBright),{position:new THREE.Vector3(0,-3,0)}));
+depts.forEach((c,i)=>{const a=(i/6)*Math.PI*2,x=Math.cos(a)*12,z=Math.sin(a)*12;visionGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-3,0),new THREE.Vector3(x,-4.5,z)]),new THREE.LineBasicMaterial({color:0xd4ac1b,transparent:true,opacity:0.15}));});
+visionGroup.visible=false;scene.add(visionGroup);
+
+// PROBLEM GROUP (Slide 3)
+const problemGroup=new THREE.Group();const shapes=[];
+for(let i=0;i<20;i++){const rs=Math.random(),g=rs<0.3?new THREE.BoxGeometry(1.5,1.5,1.5):rs<0.5?new THREE.SphereGeometry(0.8,8,8):rs<0.7?new THREE.ConeGeometry(0.6,1.5,6):new THREE.TorusGeometry(0.6,0.2,8,16);
+const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(Math.random()*0.1+0.05,0.8,0.5),metalness:0.5,roughness:0.4}));
+m.position.set((Math.random()-0.5)*25,(Math.random()-0.5)*15,(Math.random()-0.5)*20);m.rotation.set(Math.random()*Math.PI,Math.random()*Math.PI,Math.random()*Math.PI);
+m.userData={bs:m.position.clone(),rs:new THREE.Vector3((Math.random()-0.5)*0.02,(Math.random()-0.5)*0.02,(Math.random()-0.5)*0.02),fs:0.5+Math.random(),fa:0.5+Math.random()};
+problemGroup.add(m);shapes.push(m);}
+problemGroup.add(Object.assign(new THREE.Mesh(new THREE.TorusGeometry(3,0.1,8,32),new THREE.MeshStandardMaterial({color:0xff2244,emissive:0xff2244,emissiveIntensity:0.5})),{position:new THREE.Vector3(0,3,0)}));
+problemGroup.visible=false;scene.add(problemGroup);
+
+// SOLUTION GROUP (Slide 4)
+const solutionGroup=new THREE.Group();
+const centralSphere=new THREE.Mesh(new THREE.IcosahedronGeometry(3,2),goldMatBright);solutionGroup.add(centralSphere);
+for(let i=0;i<30;i++){const sz=0.2+Math.random()*0.5,g=Math.random()>0.5?new THREE.BoxGeometry(sz,sz,sz):new THREE.SphereGeometry(sz*0.6,8,8);
+const me=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(0.1+Math.random()*0.05,0.7,0.5),metalness:0.8,roughness:0.2,emissive:0x332200,emissiveIntensity:0.2}));
+const ag=(i/30)*Math.PI*2,rad=6+Math.random()*4;me.position.set(Math.cos(ag)*rad,Math.sin(ag*2)*3,Math.sin(ag)*rad);
+me.userData={oa:ag,or:rad,ospd:0.003+Math.random()*0.002};solutionGroup.add(me);}
+for(let i=0;i<3;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(5+i*2.5,0.05,8,64),new THREE.MeshStandardMaterial({color:0xd4ac1b,emissive:0x332200,emissiveIntensity:0.3,transparent:true,opacity:0.4-i*0.1}));ring.rotation.x=Math.PI/2+i*0.2;ring.rotation.z=i*0.3;solutionGroup.add(ring);}
+solutionGroup.visible=false;scene.add(solutionGroup);
+
+// STATS GROUP (Slide 6)
+const statsGroup=new THREE.Group();
+for(let i=0;i<3;i++){const h=1+i*2;const bar=new THREE.Mesh(new THREE.BoxGeometry(2,h,2),new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(0.12+i*0.05,0.8,0.5),metalness:0.7,roughness:0.3,emissive:0x332200,emissiveIntensity:0.3}));bar.position.set((i-1)*4,0,0);statsGroup.add(bar);statsGroup.add(new THREE.Mesh(new THREE.BoxGeometry(2.5,0.2,2.5),darkMat).translateX((i-1)*4).translateY(-h/2-0.1));}
+statsGroup.visible=false;scene.add(statsGroup);
+
+// REVENUE GROUP (Slide 7)
+const revenueGroup=new THREE.Group();
+for(let i=0;i<4;i++){const angle=(i/4)*Math.PI*2,r=5;const revItem=new THREE.Mesh(new THREE.OctahedronGeometry(0.8,0),new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(i*0.15,0.7,0.5),metalness:0.6,roughness:0.4,emissive:new THREE.Color().setHSL(i*0.15,0.8,0.3),emissiveIntensity:0.3}));revItem.position.set(Math.cos(angle)*r,Math.sin(angle*0.5)*2,Math.sin(angle)*r);revenueGroup.add(revItem);}
+revenueGroup.add(Object.assign(new THREE.Mesh(new THREE.IcosahedronGeometry(1.2,1),goldMatBright),{position:new THREE.Vector3(0,0,0)}));
+revenueGroup.visible=false;scene.add(revenueGroup);
+
+// TECH GROUP (Slide 8)
+const techGroup=new THREE.Group();
+const techShapes=[new THREE.BoxGeometry(1,1,1),new THREE.SphereGeometry(0.6,16,16),new THREE.ConeGeometry(0.5,1.2,4),new THREE.TorusGeometry(0.5,0.15,8,16),new THREE.DodecahedronGeometry(0.6),new THREE.TorusKnotGeometry(0.5,0.15,64,8),new THREE.OctahedronGeometry(0.5),new THREE.IcosahedronGeometry(0.4)];
+for(let i=0;i<8;i++){const t=new THREE.Mesh(techShapes[i],new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(0.08+i*0.04,0.7,0.5),metalness:0.8,roughness:0.3,emissive:0x332200,emissiveIntensity:0.3}));const ag=(i/8)*Math.PI*2,r=6;t.position.set(Math.cos(ag)*r,Math.sin(ag*3)*1.5,Math.sin(ag)*r);t.userData={oa:ag,or:r,os:0.004+i*0.001};techGroup.add(t);}
+techGroup.add(Object.assign(new THREE.Mesh(new THREE.SphereGeometry(7,32,32),new THREE.MeshStandardMaterial({color:0xd4ac1b,emissive:0x332200,emissiveIntensity:0.15,transparent:true,opacity:0.08,wireframe:true})),{position:new THREE.Vector3(0,0,0)}));
+techGroup.visible=false;scene.add(techGroup);
+
+// CLOSING GROUP (Slide 9)
+const closingGroup=new THREE.Group();
+const closingKnot=new THREE.Mesh(new THREE.TorusKnotGeometry(3,1,128,32,2,3),goldMatBright);closingGroup.add(closingKnot);
+for(let i=0;i<5;i++){const ring=new THREE.Mesh(new THREE.TorusGeometry(4+i*2,0.08,8,64),new THREE.MeshStandardMaterial({color:0xd4ac1b,emissive:0x332200,emissiveIntensity:0.4-i*0.08,transparent:true,opacity:0.5-i*0.08}));ring.rotation.x=Math.PI/2+i*0.15;ring.rotation.z=i*0.25;closingGroup.add(ring);}
+const cpCount=3000,cpPos=new Float32Array(cpCount*3);for(let i=0;i<cpCount*3;i+=3){const th=Math.random()*Math.PI*2,ph=Math.random()*Math.PI,r=10+Math.random()*20;cpPos[i]=r*Math.sin(ph)*Math.cos(th);cpPos[i+1]=r*Math.sin(ph)*Math.sin(th);cpPos[i+2]=r*Math.cos(ph);}
+closingGroup.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(cpPos,3)),new THREE.PointsMaterial({color:0xffc414,size:0.08,transparent:true,opacity:0.5})));
+closingGroup.visible=false;scene.add(closingGroup);
+
+const cameraPositions=[{p:{x:0,y:5,z:30},l:{x:0,y:0,z:0}},{p:{x:0,y:3,z:20},l:{x:0,y:-3,z:0}},{p:{x:0,y:5,z:15},l:{x:0,y:0,z:0}},{p:{x:0,y:2,z:18},l:{x:0,y:0,z:0}},{p:{x:0,y:4,z:16},l:{x:0,y:0,z:0}},{p:{x:0,y:3,z:18},l:{x:0,y:0,z:0}},{p:{x:0,y:3,z:16},l:{x:0,y:0,z:0}},{p:{x:0,y:5,z:20},l:{x:0,y:0,z:0}},{p:{x:0,y:3,z:25},l:{x:0,y:0,z:0}}];
+
+const slides=document.querySelectorAll('.slide');
+document.getElementById('navDots').innerHTML='';
+slides.forEach((_,i)=>{const dot=document.createElement('div');dot.className='nav-dot';dot.dataset.index=i;dot.addEventListener('click',()=>{window.scrollTo({top:window.innerHeight*(i+1),behavior:'smooth'});});document.getElementById('navDots').appendChild(dot);});
+
+let currentSlide=0;
+function updateSlides(){
+const scrollY=window.scrollY;const maxScroll=document.querySelector('.scroll-container').scrollHeight-window.innerHeight;const progress=scrollY/maxScroll;
+document.getElementById('progressBar').style.width=(progress*100)+'%';
+const slideIndex=Math.min(Math.floor(progress*9),8);if(slideIndex!==currentSlide)currentSlide=slideIndex;
+slides.forEach((s,i)=>{s.classList.toggle('active',Math.abs(progress-(i+0.5)/9)<0.08);});
+document.querySelectorAll('.nav-dot').forEach((d,i)=>d.classList.toggle('active',i===currentSlide));
+document.getElementById('slideNumber').textContent=`${String(currentSlide+1).padStart(2,'0')} / 09`;
+document.getElementById('scrollHint').style.opacity=progress>0.03?'0':'1';
+const cp=cameraPositions[currentSlide];camera.position.set(cp.p.x,cp.p.y,cp.p.z);camera.lookAt(cp.l.x,cp.l.y,cp.l.z);
+const vis={0:[heroGroup],1:[visionGroup],2:[problemGroup],3:[solutionGroup],4:[solutionGroup],5:[statsGroup],6:[revenueGroup],7:[techGroup],8:[closingGroup]};
+Object.values(vis).flat().forEach(g=>{g.visible=vis[currentSlide].includes(g)});
+}
+window.addEventListener('scroll',updateSlides);
+window.addEventListener('resize',()=>{camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)});
+
+let time=0;
+function animate(){
+requestAnimationFrame(animate);time+=0.016;
+torusKnot.rotation.x=time*0.3;torusKnot.rotation.y=time*0.2;
+t1.rotation.z=time*0.15;t2.rotation.y=time*0.1;
+shapes.forEach(s=>{const d=s.userData;s.rotation.x+=d.rs.x;s.rotation.y+=d.rs.y;s.rotation.z+=d.rs.z;s.position.y=d.bs.y+Math.sin(time*d.fs)*d.fa});
+centralSphere.rotation.x=time*0.2;centralSphere.rotation.y=time*0.3;
+solutionGroup.children.forEach(c=>{if(c.userData.oa!==undefined){c.userData.oa+=c.userData.ospd;c.position.x=Math.cos(c.userData.oa)*c.userData.or;c.position.z=Math.sin(c.userData.oa)*c.userData.or}});
+closingKnot.rotation.x=time*0.15;closingKnot.rotation.y=time*0.1;
+closingGroup.children.forEach((c,i)=>{if(i>0&&i<6){c.rotation.x+=0.003+i*0.001;c.rotation.y+=0.002+i*0.0005}});
+renderer.render(scene,camera);
+}
+animate();updateSlides();
+</script>
+</body>
+</html>
